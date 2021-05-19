@@ -757,7 +757,8 @@ dump1::dump1(TTree *tree) : fChain(0)
       // The following code should be used if you want this class to access a chain
       // of trees.
       TChain * chain = new TChain("TreeMaker2/PreSelection","");
-      chain->Add("prod-v3/merged-rpv_stop_650_t3j_uds.root/TreeMaker2/PreSelection");
+      //chain->Add("prod-v3/merged-rpv_stop_650_t3j_uds.root/TreeMaker2/PreSelection");
+      chain->Add("../../../root-files/unskimmed-signal-v1/signalR2-rpv_stop_750_t3j_uds.root/PreSelection");
       tree = chain;
 #endif // SINGLE_TREE
 
