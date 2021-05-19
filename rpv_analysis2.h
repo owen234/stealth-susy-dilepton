@@ -291,7 +291,7 @@ public :
    TBranch        *b_Jets_toptag_index;   //!
    TBranch        *b_JetsAK8_toptag_index;   //!
 
-   rpv_analysis2(TTree *tree=0);
+   rpv_analysis2(const char* infile = "");
    virtual ~rpv_analysis2();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -305,33 +305,29 @@ public :
 #endif
 
 #ifdef rpv_analysis2_cxx
-rpv_analysis2::rpv_analysis2(TTree *tree) : fChain(0) 
+rpv_analysis2::rpv_analysis2(const char* infile) : fChain(0) 
 {
-// if parameter tree is not specified (or zero), connect the file
-// used to generate this class and read the Tree.
-   if (tree == 0) {
-
-#ifdef SINGLE_TREE
-      // The following code should be used if you want this class to access
-      // a single tree instead of a chain
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("Memory Directory");
-      if (!f || !f->IsOpen()) {
-         f = new TFile("Memory Directory");
-      }
-      f->GetObject("PreSelection",tree);
-
-#else // SINGLE_TREE
-
-      // The following code should be used if you want this class to access a chain
-      // of trees.
-      TChain * chain = new TChain("PreSelection","");
-      //chain->Add("prod-subjets-topvars1/topvars-rpv_stop_650_t3j_uds.root/PreSelection");
-      chain->Add("../../../root-files/unskimmed-signal-v1/signalR2-rpv_stop_750_t3j_uds.root/PreSelection");
-      tree = chain;
-#endif // SINGLE_TREE
-
+   if ( strlen( infile ) ==  0 ) {
+      printf("\n\n *** Please provide an input file including the path to the file as the argument to the constructor.  For example, \n") ;
+      printf("\n\n  rpv_analysis2 r(\"directory-name/file-name.root\")\n\n") ;
+      return ;
    }
+
+   TChain * chain = new TChain("TreeMaker2/PreSelection","");
+   char arg1[1000] ;
+   sprintf( arg1, "%s/PreSelection", infile ) ;
+   //chain->Add("../../../root-files/unskimmed-signal-v1/signalR2-rpv_stop_750_t3j_uds.root/PreSelection");
+   chain->Add(arg1);
+   int nentries = chain -> GetEntries() ;
+   if ( nentries <= 0 ) {
+      printf("\n\n *** It looks like the file %s will not work.  Please try another or check that you entered the path to your file correctly.\n\n", infile) ;
+      return ;
+   }
+   TTree* tree = chain;
    Init(tree);
+
+   printf("\n\n Loaded file : %s\n", infile) ;
+   printf("     the file has %lld entries in it.\n\n", chain->GetEntries() ) ;
 }
 
 rpv_analysis2::~rpv_analysis2()

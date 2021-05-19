@@ -1,3 +1,6 @@
+root-files
+*-save-*
+*.root
 *.gem
 *.rbc
 /.config
