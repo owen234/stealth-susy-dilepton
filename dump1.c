@@ -13,6 +13,8 @@ double calcDr( double eta1, double eta2, double phi1, double phi2 ) ;
 void dump1::Loop( int display_event, float rhophi_scale )
 {
 
+   gStyle -> SetOptStat(0) ;
+
    bool skip_sl_top_events(true) ;
 
    if (fChain == 0) return;
@@ -127,6 +129,8 @@ void dump1::Loop( int display_event, float rhophi_scale )
       can3 -> Clear() ;
       h_dummy_rhophi -> Draw() ;
       can3 -> Update() ; can3 -> Draw() ;
+
+      gSystem -> ProcessEvents() ;
 
 
 
@@ -405,6 +409,8 @@ void dump1::Loop( int display_event, float rhophi_scale )
       can1 -> Update() ; can1 -> Draw() ;
       can2 -> Update() ; can2 -> Draw() ;
       can3 -> Update() ; can3 -> Draw() ;
+
+      gSystem -> ProcessEvents() ;
 
       char answer[100] ;
       printf("\n\n Type n for next, q to quit: ") ;
