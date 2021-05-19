@@ -723,7 +723,7 @@ public :
    TBranch        *b_Weight;   //!
    TBranch        *b_ZCandidates;   //!
 
-   dump1(TTree *tree=0);
+   dump1(const char* infile = "");
    virtual ~dump1();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -737,33 +737,31 @@ public :
 #endif
 
 #ifdef dump1_cxx
-dump1::dump1(TTree *tree) : fChain(0) 
+dump1::dump1(const char* infile) : fChain(0) 
 {
-// if parameter tree is not specified (or zero), connect the file
-// used to generate this class and read the Tree.
-   if (tree == 0) {
 
-#ifdef SINGLE_TREE
-      // The following code should be used if you want this class to access
-      // a single tree instead of a chain
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("Memory Directory");
-      if (!f || !f->IsOpen()) {
-         f = new TFile("Memory Directory");
-      }
-      f->GetObject("TreeMaker2/PreSelection",tree);
-
-#else // SINGLE_TREE
-
-      // The following code should be used if you want this class to access a chain
-      // of trees.
-      TChain * chain = new TChain("TreeMaker2/PreSelection","");
-      //chain->Add("prod-v3/merged-rpv_stop_650_t3j_uds.root/TreeMaker2/PreSelection");
-      chain->Add("../../../root-files/unskimmed-signal-v1/signalR2-rpv_stop_750_t3j_uds.root/PreSelection");
-      tree = chain;
-#endif // SINGLE_TREE
-
+   if ( strlen( infile ) ==  0 ) {
+      printf("\n\n *** Please provide an input file including the path to the file as the argument to the constructor.  For example, \n") ;
+      printf("\n\n  dump1 d(\"directory-name/file-name.root\")\n\n") ;
+      return ;
    }
+
+   TChain * chain = new TChain("TreeMaker2/PreSelection","");
+   char arg1[1000] ;
+   sprintf( arg1, "%s/PreSelection", infile ) ;
+   //chain->Add("../../../root-files/unskimmed-signal-v1/signalR2-rpv_stop_750_t3j_uds.root/PreSelection");
+   chain->Add(arg1);
+   int nentries = chain -> GetEntries() ;
+   if ( nentries <= 0 ) {
+      printf("\n\n *** It looks like the file %s will not work.  Please try another or check that you entered the path to your file correctly.\n\n", infile) ;
+      return ;
+   }
+   TTree* tree = chain;
    Init(tree);
+
+   printf("\n\n Please ignore the unknown branch errors above.\n\n") ;
+   printf("\n\n Loaded file : %s\n", infile) ;
+   printf("     the file has %lld entries in it.\n\n", chain->GetEntries() ) ;
 }
 
 dump1::~dump1()
